@@ -16,6 +16,11 @@
             </el-image>
           </el-carousel-item>
         </el-carousel>
+        <el-image
+          :src="require('@/assets/video.gif')"
+          style="height: 600px"
+        >
+        </el-image>
       </el-main>
   </el-container>
   <bottom-footer></bottom-footer>
@@ -31,7 +36,9 @@ export default {
     BottomFooter
   },
   data() {
-    
+    return{
+
+    }
   },
   methods: {
     img_src (index) {
@@ -50,5 +57,11 @@ export default {
   background-color: #E9EEF3;
   color: #333;
   text-align: center;
+}
+/deep/ .vjs-custom-skin > .video-js .vjs-control-bar{
+  display: none;
+}
+/deep/ .vjs-tech {
+  pointer-events: none;
 }
 </style>
