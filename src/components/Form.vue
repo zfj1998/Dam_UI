@@ -112,17 +112,6 @@ export default {
 }
 </script>
 <style>
-.el-main {
-  background-color: #E9EEF3;
-  color: #333;
-  min-height:800px;
-  /*line-height: 160px;*/
-}
-.el-aside {
-  background-color: #D3DCE6;
-  color: #333;
-  /*line-height: 200px;*/
-}
 .row-title {
   margin-top: 50px;
 }

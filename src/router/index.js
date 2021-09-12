@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import MainPage from "../components/MainPage.vue";
 import From from "../components/Form.vue";
 import Tree from "../components/Tree.vue";
+import Chart from "../components/Chart.vue";
 
 const routes = [
     {
@@ -22,6 +23,11 @@ const routes = [
         path: '/tree',
         name: 'Tree',
         component: Tree
+    },
+    {
+        path: '/chart',
+        name: 'Chart',
+        component: Chart
     }
 ];
 

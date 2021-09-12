@@ -17,8 +17,8 @@
           </el-carousel-item>
         </el-carousel>
         <el-image
-          :src="require('@/assets/video.gif')"
-          style="height: 600px"
+          :src="require('@/assets/small.gif')"
+          style="height: 200px"
         >
         </el-image>
       </el-main>
@@ -53,15 +53,5 @@ export default {
 // <el-image :src="require('@/assets/1.jpg')"></el-image>
 </script>
 <style>
-.el-main {
-  background-color: #E9EEF3;
-  color: #333;
-  text-align: center;
-}
-/deep/ .vjs-custom-skin > .video-js .vjs-control-bar{
-  display: none;
-}
-/deep/ .vjs-tech {
-  pointer-events: none;
-}
+
 </style>

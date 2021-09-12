@@ -13,6 +13,9 @@
       <el-menu-item index="tree">
         树形侧栏
       </el-menu-item>
+      <el-menu-item index="chart">
+        图表绘制
+      </el-menu-item>
     </el-menu>
   </el-header>
   </el-container>
