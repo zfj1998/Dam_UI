@@ -128,9 +128,8 @@ export default {
       date_set.forEach(item => {
         date_str.push(item.calendar());
       });
-      // console.log(date_str);
       selected.forEach(p => {
-        result_data[p] = [p];    
+        result_data[p] = [];    
       });
       date_str.forEach(d => {
         selected.forEach(p => {
@@ -141,44 +140,33 @@ export default {
           }
         });
       });
-      date_str = ['date'].concat(date_str);
-      let source = [date_str];
-      selected.forEach(item => {
-        source.push(result_data[item]);    
-      });
-      source = _.zip(...source);
-      // console.log(source);
-      return source;
+      return {
+        'result_data': result_data,
+        'date': date_str
+      };
     },
     parseValues(data, selected) {
-      // console.log(data);
-      // console.log(selected);
       //parse series
       const series = []
       const serie_temp = {
         name: null,
         type: 'line',
-        encode: {
-            // 将 "amount" 列映射到 X 轴。
-            x: 'date',
-            // 将 "product" 列映射到 Y 轴。
-            y: null
-        },
-        connectNulls:true
+        stack: '测量值',
+        connectNulls:true,
+        data: null
       };
+      const source = this.parseSource(data, selected);
       selected.forEach(item => {
         const serie_copy = _.cloneDeep(serie_temp);
         serie_copy['name'] = item;
-        serie_copy['encode']['y'] = item;
+        serie_copy['data'] = source['result_data'][item];
         series.push(serie_copy);
       });
-      //parse dataset.source
-      const source = this.parseSource(data, selected);
 
       return {
         'legend': selected,
         'series': series,
-        'source': source
+        'date': source['date']
       }
     },
     handleDraw() {
@@ -188,10 +176,9 @@ export default {
         .get(url).then(response => {
           const result = this.parseValues(response.data, this.selected_points);
           const new_map = _.cloneDeep(baseMap);
-          new_map['dataset']['source'] = result['source'];
           new_map['legend']['data'] = result['legend'];
           new_map['series'] = result['series'];
-          console.log(new_map);
+          new_map['xAxis']['data'] = result['date'];
           this.option = new_map;
         });
     }
