@@ -13,7 +13,7 @@
       <el-main>
         <el-row justify="start" align="middle" >
           <el-col :span="3">
-            请选择要绘制的测点
+            请选择测点
           </el-col>
           <el-col :span="3">
             <el-select
