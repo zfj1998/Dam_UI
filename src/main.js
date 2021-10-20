@@ -8,7 +8,7 @@ import zhHans from 'vue-cesium/lib/locale/lang/zh-hans'
 import * as echarts from 'echarts';
 
 import 'element-plus/dist/index.css'
-import 'vue-cesium/dist/index.css'
+// import 'vue-cesium/dist/index.css'
 
 
 const app = createApp(DamUI);

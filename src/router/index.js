@@ -3,6 +3,7 @@ import MainPage from "../components/MainPage.vue";
 import From from "../components/Form.vue";
 import Tree from "../components/Tree.vue";
 import Chart from "../components/Chart.vue";
+import Terrain from "../components/Terrain.vue";
 
 const routes = [
     {
@@ -28,6 +29,11 @@ const routes = [
         path: '/chart',
         name: 'Chart',
         component: Chart
+    },
+    {
+        path: '/terrain',
+        name: 'Terrain',
+        component: Terrain
     }
 ];
 

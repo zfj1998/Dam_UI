@@ -16,6 +16,9 @@
       <el-menu-item index="chart">
         图表绘制
       </el-menu-item>
+      <el-menu-item index="terrain">
+        三维展示
+      </el-menu-item>
     </el-menu>
   </el-header>
   </el-container>
