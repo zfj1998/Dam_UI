@@ -217,4 +217,4 @@ export default {
 //   .otherwise(function (error) {
 //     console.log(error);
 //   });
-// }, (3 * 1000));
+// // }, (3 * 1000));
