@@ -47,6 +47,12 @@
           <el-col :span="2">
             <el-button type="primary" @click="handleBackNear">背面-近观</el-button>
           </el-col>
+          <el-col :span="2">
+            <el-button type="primary" @click="handlePosition">输出坐标</el-button>
+          </el-col>
+           <el-col :span="2">
+            <el-button type="primary" @click="flyEverywhere">移动相机</el-button>
+          </el-col>
         </el-row>
         <el-row ref="viewerContainer" class="demo-viewer">
           <vc-viewer
@@ -65,6 +71,7 @@
 import TopHeader from './TopHeader.vue'
 import BottomFooter from './Footer.vue'
 import { ref } from 'vue'
+import { cesiumStyle, modelTree, token, modelID } from './config'
 export default {
   name: 'Terrain',
   components: {
@@ -89,26 +96,11 @@ export default {
       imageryProvider.value = new Cesium.ArcGisMapServerImageryProvider({
         url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
       })
-      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3MTUwZDQ3NS1mYzY5LTRiNzAtYjk5YS1hZGRiZTYzZTgyZGYiLCJpZCI6Njg4MzQsImlhdCI6MTYzMjg5NTExN30.qPq9W2KiIj5bPvreaPNTcSXJcdk-EB_egnG0zXAtmvM"
       Cesium.Ion.defaultAccessToken = token
       var tileset = new Cesium.Cesium3DTileset({
-        url: Cesium.IonResource.fromAssetId(685488),
+        url: Cesium.IonResource.fromAssetId(modelID),
       });
-      tileset.style = new Cesium.Cesium3DTileStyle({
-        color: {
-          conditions: [
-            ["${Intensity} < 100", "${COLOR}*rgba(255,255,255, ${Intensity}/100)"],
-            ["true","${COLOR}*rgba(255,255,255, 1)"],
-          ],
-        },
-        pointSize: {
-          conditions: [
-            // ["${Intensity} > 100", "${Intensity}/100"],
-            ["${Intensity} > 100", "10"],
-            ["true", "3"],
-          ]
-        }
-      });
+      tileset.style = new Cesium.Cesium3DTileStyle(cesiumStyle);
       viewer.scene.primitives.add(tileset);
       const position = [101.00003382234061, 30.16713384607326, 5469.99576609889]
       const view = [0.3306107363100539, -0.6636694203781426, 0.00013912953119010751]
@@ -137,35 +129,7 @@ export default {
   },
   data() {
     return {
-      tree: [{
-        label: '断面',
-        children: [{
-          label: '1-1断面',
-          value: 685477,
-         }, {
-          label: '2-2断面',
-          value: 685851
-        }, {
-          label: '3-3断面',
-          value: NaN,
-          children: [{
-              label: 'dc3测点',
-              value: 685488,
-            }, {
-              label: 'dc4测点',
-              value: 685916,
-            }, {
-              label: 'dc5测点',
-              value: NaN,
-          }]
-        }, {
-          label: '4-4断面',
-          value: 685865
-        }, {
-          label: '5-5断面',
-          value: 685877
-        }]
-      }],
+      tree: modelTree
     };
   },
   methods: {
@@ -173,7 +137,7 @@ export default {
       let pos = window.Cesium.Cartographic.fromCartesian(cartesian3Pos)
       return [pos.longitude / Math.PI * 180, pos.latitude / Math.PI * 180, pos.height]
     },
-    moveCamera(position, view, duration) {
+    moveCamera(position, view, duration=5) {
       window.viewer.camera.flyTo({
         destination: window.Cesium.Cartesian3.fromDegrees(position[0], position[1], position[2]),
         orientation: {
@@ -182,6 +146,7 @@ export default {
           roll: view[2],
         },
         easingFunction: window.Cesium.EasingFunction.QUADRATIC_IN_OUT,
+        // easingFunction: window.Cesium.EasingFunction.LINEAR_NONE,
         duration: duration
       });
     },
@@ -190,106 +155,56 @@ export default {
         return null
       }
       window.viewer.scene.primitives.remove(window.tileset);
-      var new_tileset = new Cesium.Cesium3DTileset({
-          url: Cesium.IonResource.fromAssetId(node.value),
+      var new_tileset = new window.Cesium.Cesium3DTileset({
+          url: window.Cesium.IonResource.fromAssetId(node.value),
       });
-      new_tileset.style = new Cesium.Cesium3DTileStyle({
-        color: {
-          conditions: [
-            ["${Intensity} < 100", "${COLOR}*rgba(255,255,255, ${Intensity}/100)"],
-            ["true","${COLOR}*rgba(255,255,255, 1)"],
-          ],
-        },
-        pointSize: {
-          conditions: [
-            // ["${Intensity} > 100", "${Intensity}/100"],
-            ["${Intensity} > 100", "10"],
-            ["true", "3"],
-          ]
-        }
-      });
+      new_tileset.style = new window.Cesium.Cesium3DTileStyle(cesiumStyle)
       window.viewer.scene.primitives.add(new_tileset);
       window.tileset = new_tileset;
     },
     handleOverlook() {
       this.moveCamera(
         [101.02071788704941, 30.19557802563253, 35002.56961373912],
-        [6.2308596399245, -1.5665436888815525, 0], 3
+        [6.2308596399245, -1.5665436888815525, 0]
       );
     },
     handleFrontRemote() {
       this.moveCamera(
         [101.00003382234061, 30.16713384607326, 5469.99576609889],
-        [0.3306107363100539, -0.6636694203781426, 0.00013912953119010751], 3
+        [0.3306107363100539, -0.6636694203781426, 0.00013912953119010751]
       );
     },
     handleFrontNear() {
       this.moveCamera(
         [101.01624382450255, 30.18801465665147, 3233.096298788214],
-        [5.613167761782217, -0.6426865360951766, 0.000020562733451079396], 3
+        [5.613167761782217, -0.6426865360951766, 0.000020562733451079396]
       );
     },
     handleBackRemote() {
       this.moveCamera(
         [101.00338900395397, 30.22458095251689, 5429.306285067023],
-        [2.8334525785689086, -0.6666150024282387, 0.00010355921141513846], 3
+        [2.8334525785689086, -0.6666150024282387, 0.00010355921141513846]
       );
     },
     handleBackNear() {
       this.moveCamera(
         [101.01466159412439, 30.20213222697925, 2848.244878626112],
-        [3.5491476296255393, -0.21910907864251672, 0.000018831979246236585], 3
+        [3.5491476296255393, -0.21910907864251672, 0.000018831979246236585]
       );
     },
     handlePosition() {
         console.log(this.toDegrees(window.viewer.camera.position))
         console.log(window.viewer.camera.heading, window.viewer.camera.pitch, window.viewer.camera.roll)
+    },
+    flyEverywhere() {
+      console.log("flying");
+      this.handleFrontNear();
+      setTimeout(() => {
+        this.handleFrontRemote();
+      }, 5000); 
     }
   }
 };
-// tileset.style = new Cesium.Cesium3DTileStyle({
-//   color: {
-//     conditions: [
-//       ["${Intensity} === 50", "${COLOR}*rgba(255,255,255, 1)"],
-//       ["true","${COLOR}*rgba(255,255,255, 1)"],
-//     ],
-//   },
-//   pointSize: {
-//     conditions: [
-//       ["true", "${Intensity}/15"],
-//     ]
-//   }
-// });
-
-
-// setTimeout(function() {
-//     viewer.scene.primitives.remove(tileset);
-// }, (3 * 1000));
-
-// setTimeout(function() {
-//     var new_tileset = viewer.scene.primitives.add(
-//   new Cesium.Cesium3DTileset({
-//     url: Cesium.IonResource.fromAssetId(654382),
-//   })
-// );
-// new_tileset.readyPromise
-//   .then(function () {
-//     viewer.zoomTo(tileset);
-
-//     // Apply the default style if it exists
-//     var extras = new_tileset.asset.extras;
-//     if (
-//       Cesium.defined(extras) &&
-//       Cesium.defined(extras.ion) &&
-//       Cesium.defined(extras.ion.defaultStyle)
-//     ) {
-//       new_tileset.style = new Cesium.Cesium3DTileStyle(extras.ion.defaultStyle);
-//     }
-//   })
-//   .otherwise(function (error) {
-//     console.log(error);
-//   });
-// }, (3 * 1000));
 
 </script>
 <style>
