@@ -36,13 +36,14 @@
           </el-col>
         </el-row>
         <div class="chart-block">
-          <ECharts
+          <!-- <ECharts
               class="chart"
               ref="chart"
               :option="option"
               :loading="loading"
               :loadingOpts="{ text: 'Wait for 0.5s' }"
-          />
+          /> -->
+          <v-chart ref='myChart' class="chart"/>
         </div>
       </el-main>
   </el-container>
@@ -54,18 +55,21 @@ import TopHeader from './TopHeader.vue'
 import BottomFooter from './Footer.vue'
 import { createComponent } from 'echarts-for-vue'
 import * as echarts from 'echarts'
-import { h } from 'vue'
+import { h, ref } from 'vue'
 import { baseMap } from './config'
 import axios from 'axios';
 import _ from 'lodash';
 import moment from 'moment';
+import VChart from 'vue-echarts';
+
 
 export default {
   name: 'Chart',
   components: {
     TopHeader,
     BottomFooter,
-    ECharts: createComponent({ echarts, h }),   // 作为组件使用
+    // ECharts: createComponent({ echarts, h }),   // 作为组件使用
+    VChart
   },
   data() {
     return {
@@ -180,6 +184,8 @@ export default {
           new_map['series'] = result['series'];
           new_map['xAxis']['data'] = result['date'];
           this.option = new_map;
+          this.$refs.myChart.setOption(new_map, true);
+          console.log(this.option.series)
         });
     }
   }

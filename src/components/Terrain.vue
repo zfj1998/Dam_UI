@@ -37,10 +37,11 @@
           </vc-viewer>
           <el-row class="demo-toolbar">
             <el-button
-              v-if="true"
+              v-if="hasChart"
               type="danger"
               style="padding: 0px; margin: 0px; margin-right: 10px"
               @click="showDrawer = true"
+              :loading="chartLoading"
             >
               <el-icon :size="35" color="white">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" data-v-152cbb9b=""><path fill="currentColor" d="M128 896V128h768v768H128zm291.712-327.296 128 102.4 180.16-201.792-47.744-42.624-139.84 156.608-128-102.4-180.16 201.792 47.744 42.624 139.84-156.608zM816 352a48 48 0 1 0-96 0 48 48 0 0 0 96 0z"></path></svg>
@@ -59,26 +60,20 @@
   </el-container>
   <el-drawer
     v-model="showDrawer"
-    :title="chartSource"
+    :title="drawerTitle"
     direction="rtl"
     size="50%"
   >
     <div class="chart-block">
-      <ECharts
-        class="chart"
-        ref="chart"
-        :option="option"
-        :loading="loading"
-        :loadingOpts="{ text: 'Wait for 0.5s' }"
+      <v-chart
+        class="chart1"
+        ref='myChart'
       />
     </div>
     <div class="chart-block2">
-      <ECharts
-        class="chart"
-        ref="chart"
-        :option="option"
-        :loading="loading"
-        :loadingOpts="{ text: 'Wait for 0.5s' }"
+      <v-chart
+        class="chart2"
+        ref="myChart2"
       />
     </div>
   </el-drawer>
@@ -90,11 +85,14 @@ import { ref, reactive, toRefs } from 'vue'
 import { ElNotification } from 'element-plus'
 import { cesiumStyle, modelTree, token, modelID, baseMap } from './config'
 import axios from 'axios';
+import moment from 'moment';
+import VChart from 'vue-echarts';
 
 export default {
   name: 'Terrain',
   components: {
-    TopHeader
+    TopHeader,
+    VChart
   },
   setup() {
     const state = reactive({
@@ -150,13 +148,24 @@ export default {
       onViewerReady
     }
   },
+  watch: {
+    showDrawer(value) {
+      // 监视drawer出现，并加载好chart后，再更新数据
+      if (value) {
+        this.$nextTick(function () {
+          this.$refs.myChart.setOption(this.option, true);
+        })
+      }
+    }
+  },
   data() {
     return {
       tree: modelTree,
       viewPoint: ref('正面-远观'),
-      chartSource: 'DC3测点-历史数据',
-      option: baseMap, // 绘制echart
-      chartLoading: true
+      drawerTitle: '',
+      chartLoading: false,
+      hasChart: false,
+      option: baseMap
     };
   },
   methods: {
@@ -178,12 +187,13 @@ export default {
       });
     },
     handleNodeClick(node) {
+      this.hasChart = false;
       // 显示基本信息
       if (node.title) {
         this.messaging(node.title, node.message);
       }
       // 加载3Dtileset模型
-      if (node.value & this.tilesetModel != node.value) {
+      if (node.value && this.tilesetModel != node.value) {
         this.tilesetModel = node.value;
         window.viewer.scene.primitives.remove(window.tileset);
         var new_tileset = new window.Cesium.Cesium3DTileset({
@@ -195,22 +205,96 @@ export default {
       }
       // 加载折线图数据
       if (node.section) {
+        this.hasChart = true;
+        this.drawerTitle = node.title;
         this.loadChart(node.section)
       }
     },
     loadChart(section_name) {
-      const base_url = 'http://localhost:8000/mpoints/?section__name='
+      this.chartLoading = true;
+      const sec_url = 'http://localhost:8000/mpoints/?section__name='
       axios
-        .get(base_url+section_name)
+        .get(sec_url+section_name)
         .then(response => {
+          const points = [];
           response.data.forEach(item => {
-            this.points.push({
-              'value': item.name,
-              'label': item.name
-            })
+            points.push(item.name);
           });
-          this.points_loading=false;
+          let point_url = 'http://localhost:8000/mvalues/?m_points=';
+          point_url += _.join(points, ',')
+          axios
+            .get(point_url).then(response => {
+              const result = this.parseValues(response.data, points);
+              const new_map = _.cloneDeep(baseMap);
+              new_map['legend']['data'] = result['legend'];
+              new_map['series'] = result['series'];
+              new_map['xAxis']['data'] = result['date'];
+              this.option = new_map;
+              this.chartLoading=false;
+            });
         });
+    },
+    parseSource(data, selected) {
+      let date_set = [];
+      let date_str = [];
+      const date_dict = {};
+      const result_data = {};
+      data.forEach(item => {
+        const m_time = item['m_time'];
+        const time_obj = moment(m_time);
+        date_set.push(time_obj);
+        if(date_dict[item['point_name']]){
+          date_dict[item['point_name']][time_obj.calendar()] = item['value'];
+        }else{
+          date_dict[item['point_name']] = {};
+          date_dict[item['point_name']][time_obj.calendar()] = item['value'];
+        }
+      });
+      date_set = [...new Set(date_set)];
+      date_set.sort((a, b) => a - b);
+      date_set.forEach(item => {
+        date_str.push(item.calendar());
+      });
+      selected.forEach(p => {
+        result_data[p] = [];    
+      });
+      date_str.forEach(d => {
+        selected.forEach(p => {
+          if(date_dict[p][d]){
+            result_data[p].push(date_dict[p][d]);
+          }else{
+            result_data[p].push(null);
+          }
+        });
+      });
+      return {
+        'result_data': result_data,
+        'date': date_str
+      };
+    },
+    parseValues(data, selected) {
+      //parse series
+      const series = []
+      const serie_temp = {
+        name: null,
+        type: 'line',
+        stack: '测量值',
+        connectNulls:true,
+        data: null
+      };
+      const source = this.parseSource(data, selected);
+      selected.forEach(item => {
+        const serie_copy = _.cloneDeep(serie_temp);
+        serie_copy['name'] = item;
+        serie_copy['data'] = source['result_data'][item];
+        series.push(serie_copy);
+      });
+
+      return {
+        'legend': selected,
+        'series': series,
+        'date': source['date']
+      }
     },
     renderTreeContent(h, { node, data, store }) {
         return <span style="font-size:115%">{node.label}</span>;
