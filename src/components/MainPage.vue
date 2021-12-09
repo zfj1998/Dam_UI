@@ -47,10 +47,6 @@ export default {
     }
   }
 }
-
-
-// <el-image :src="require(img_src(index))"></el-image>
-// <el-image :src="require('@/assets/1.jpg')"></el-image>
 </script>
 <style>
 

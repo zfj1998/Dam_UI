@@ -23,11 +23,19 @@ export const baseMap = {
   xAxis: {
     type: 'category',
     boundaryGap: false,
+    axisLabel: {
+      textStyle: {
+        fontSize: 16,
+      }
+    }
   },
   yAxis: {
     type: 'value',
     axisLabel: {
-      formatter: '{value}mm'
+      formatter: '{value}mm',
+      textStyle: {
+        fontSize: 16,
+      }
     }
   },
   series: []
@@ -45,13 +53,19 @@ export const modelTree = [{
     label: '3-3断面',
     value: NaN,
     children: [{
-        label: 'dc3测点',
+        label: 'DC3测点',
+        section: 'DC3',
+        title: '3-3断面DC3数据',
+        message: '这里是测试这里是测试这里是测试',
         value: NaN,
       }, {
-        label: 'dc4测点',
+        label: 'DC4测点',
         value: NaN,
+        section: 'DC4',
+        title: '3-3断面DC4数据',
+        message: '这里是测试这里是测试这里是测试',
       }, {
-        label: 'dc5测点',
+        label: 'DC5测点',
         value: NaN,
     }]
   }, {

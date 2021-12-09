@@ -21,13 +21,11 @@ export default {
 <style>
 .el-main {
   /* background-color: #E9EEF3; */
-  color: #333;
   text-align: center;
   /*line-height: 160px;*/
 }
 .el-aside {
   /* background-color: #D3DCE6; */
-  color: #333;
   text-align: center;
   /*line-height: 200px;*/
 }
