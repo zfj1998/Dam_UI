@@ -62,7 +62,7 @@
     v-model="showDrawer"
     :title="drawerTitle"
     direction="rtl"
-    size="50%"
+    size="60%"
   >
     <div class="chart-block">
       <v-chart
@@ -70,7 +70,7 @@
         ref='myChart'
       />
     </div>
-    <div class="chart-block2">
+    <div class="chart-block">
       <v-chart
         class="chart2"
         ref="myChart2"
@@ -260,10 +260,14 @@ export default {
       });
       date_str.forEach(d => {
         selected.forEach(p => {
-          if(date_dict[p][d]){
-            result_data[p].push(date_dict[p][d]);
+          if(date_dict[p]){
+             if(date_dict[p][d]){
+              result_data[p].push(date_dict[p][d]);
+            }else{
+              result_data[p].push(null);
+            }
           }else{
-            result_data[p].push(null);
+            result_data[p]=[null];
           }
         });
       });
@@ -384,12 +388,6 @@ export default {
     min-width: 100%;
 }
 .chart-block {
-  margin: 15px;
-  height: 700px;
-  background-color: white
-}
-.chart-block2 {
-  margin: 15px;
   height: 700px;
   background-color: white
 }

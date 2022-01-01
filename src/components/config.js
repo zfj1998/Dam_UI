@@ -2,14 +2,6 @@ export const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3MTUwZDQ3N
 export const modelID = 688463;
 
 export const baseMap = {
-  title: {
-    text: '测点数据'
-  },
-  toolbox: {
-    feature: {
-      saveAsImage: {}
-    }
-  },
   tooltip: {
     trigger: 'axis'
   },
@@ -32,7 +24,6 @@ export const baseMap = {
   yAxis: {
     type: 'value',
     axisLabel: {
-      formatter: '{value}mm',
       textStyle: {
         fontSize: 16,
       }
