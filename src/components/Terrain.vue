@@ -64,6 +64,31 @@
     direction="rtl"
     size="60%"
   >
+    <el-row justify="center" align="middle" >
+      <el-col :span="3">
+        请选择测点
+      </el-col>
+      <el-col :span="6">
+        <el-select
+          v-model="selected_points"
+          multiple placeholder="选择测点"
+          collapse-tags
+          style="padding-right:10px"
+          :multiple-limit="10"
+        >
+          <el-option
+            v-for="item in points"
+            :key="item"
+            :label="item"
+            :value="item"
+          >
+          </el-option>
+        </el-select>
+      </el-col>
+      <el-col :span="3">
+        <el-button type="primary" :loading="chartLoading" @click="handleDraw">绘制</el-button>
+      </el-col>
+    </el-row>
     <div class="chart-block">
       <v-chart
         class="chart1"
@@ -97,7 +122,8 @@ export default {
   setup() {
     const state = reactive({
       showDrawer: false,
-      tilesetModel: modelID
+      tilesetModel: modelID,
+      updateLineChart: false
     })
     // state
     const provider = ref(null)
@@ -165,7 +191,10 @@ export default {
       drawerTitle: '',
       chartLoading: false,
       hasChart: false,
-      option: baseMap
+      option: baseMap,
+      points: [],
+      selected_points: [],
+      max_select_count: 8
     };
   },
   methods: {
@@ -207,24 +236,41 @@ export default {
       if (node.section) {
         this.hasChart = true;
         this.drawerTitle = node.title;
-        this.loadChart(node.section)
+        this.querySection(node.section)
       }
     },
-    loadChart(section_name) {
+    handleDraw() {
+      this.chartLoading = true;
+      let point_url = 'http://localhost:8000/mvalues/?m_points=';
+      point_url += _.join(this.selected_points, ',')
+      axios
+        .get(point_url).then(response => {
+          const result = this.parseValues(response.data, this.selected_points);
+          const new_map = _.cloneDeep(baseMap);
+          new_map['legend']['data'] = result['legend'];
+          new_map['series'] = result['series'];
+          new_map['xAxis']['data'] = result['date'];
+          this.option = new_map;
+          this.$refs.myChart.setOption(this.option, true);
+          this.chartLoading=false;
+        });
+    },
+    querySection(section_name) {
       this.chartLoading = true;
       const sec_url = 'http://localhost:8000/mpoints/?section__name='
       axios
         .get(sec_url+section_name)
         .then(response => {
-          const points = [];
+          this.points = [];
           response.data.forEach(item => {
-            points.push(item.name);
+            this.points.push(item.name);
           });
+          this.selected_points = this.points.slice(0, this.max_select_count);
           let point_url = 'http://localhost:8000/mvalues/?m_points=';
-          point_url += _.join(points, ',')
+          point_url += _.join(this.selected_points, ',')
           axios
             .get(point_url).then(response => {
-              const result = this.parseValues(response.data, points);
+              const result = this.parseValues(response.data, this.selected_points);
               const new_map = _.cloneDeep(baseMap);
               new_map['legend']['data'] = result['legend'];
               new_map['series'] = result['series'];
@@ -235,6 +281,7 @@ export default {
         });
     },
     parseSource(data, selected) {
+      // 查缺补漏，把各测点的值做成规整的数据矩阵
       let date_set = [];
       let date_str = [];
       const date_dict = {};
@@ -277,7 +324,7 @@ export default {
       };
     },
     parseValues(data, selected) {
-      //parse series
+      //把series做成需要的样子
       const series = []
       const serie_temp = {
         name: null,
