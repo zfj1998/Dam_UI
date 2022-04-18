@@ -112,6 +112,7 @@ import { cesiumStyle, modelTree, token, modelID, baseMap } from './config'
 import axios from 'axios';
 import moment from 'moment';
 import VChart from 'vue-echarts';
+import _ from 'lodash';
 
 export default {
   name: 'Terrain',

@@ -1,5 +1,5 @@
 export const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3MTUwZDQ3NS1mYzY5LTRiNzAtYjk5YS1hZGRiZTYzZTgyZGYiLCJpZCI6Njg4MzQsImlhdCI6MTYzMjg5NTExN30.qPq9W2KiIj5bPvreaPNTcSXJcdk-EB_egnG0zXAtmvM"
-export const modelID = 688463;
+export const modelID = 688464;
 
 export const baseMap = {
   tooltip: {
@@ -74,18 +74,74 @@ export const modelTree = [{
   }]
 }];
 
+// export const cesiumStyle = {
+//   color: {
+//     conditions: [
+//       // ["${Intensity} < 100", "${COLOR}*rgba(255,255,255, ${Intensity}/100)"],
+//       ["${Intensity} === 101", "rgba(255, 255, 255, 0.8)"], //外壳
+//       ["${Intensity} === 103","rgba(0, 255, 0, 1)"],   //h 红
+//       ["${Intensity} === 106","rgba(0, 255, 0, 1)"],    //LIN 红
+//       ["${Intensity} === 104","rgba(255, 255, 0, 1)"],   //V 蓝
+//       ["${Intensity} === 107","rgba(255, 255, 255, 0.5)"],   //其它点
+//       ["${Intensity} === 102","rgba( 25.5,   0. , 255., 1)"],   //断面
+//       ["${Intensity} === 108","rgba( 76.5,   0. , 255., 1)"],   //断面
+//       ["${Intensity} === 109","rgba(127.5,   0. , 255., 1)"],   //断面
+//       ["${Intensity} === 110","rgba(178.5,   0. , 255., 1)"],   //断面
+//       ["${Intensity} === 111","rgba(229.5,   0. , 255., 1)"],   //断面
+//     ],
+//   },
+//   pointSize: {
+//     conditions: [
+//       ["${Intensity} === 101", "2"],
+//       ["${Intensity} === 102", "3"],
+//       ["${Intensity} === 108", "3"],
+//       ["${Intensity} === 109", "3"],
+//       ["${Intensity} === 110", "3"],
+//       ["${Intensity} === 111", "3"],
+//       ["${Intensity} === 103", "7"],
+//       ["${Intensity} === 106", "7"],
+//       ["${Intensity} === 104", "7"],
+//       ["true", "1"],
+//     ]
+//   }
+// }
+// export const cesiumStyle = {
+//   color: {
+//     conditions: [
+//       // ["${Intensity} < 100", "${COLOR}*rgba(255,255,255, ${Intensity}/100)"],
+//       ["${Intensity} === 101", "rgba(255, 255, 255, 0.8)"], //外壳
+//       ["${Intensity} === 102", "rgba(0, 225, 0, 0.8)"], //断面 绿
+//       ["${Intensity} === 105", "rgba(0, 225, 0, 0.8)"], //TY 绿
+//       ["${Intensity} === 103","rgba(225, 0, 0, 1)"],   //h 红
+//       ["${Intensity} === 106","rgba(225, 0, 0, 1)"],    //LIN 红
+//       ["${Intensity} === 104","rgba(0, 0, 255, 1)"],   //V 蓝
+//       ["${Intensity} === 107","rgba(255, 255, 255, 0.5)"],   //其它点
+//     ],
+//   },
+//   pointSize: {
+//     conditions: [
+//       ["${Intensity} === 101", "2"],
+//       ["${Intensity} === 102", "3"],
+//       ["${Intensity} === 105", "3"],
+//       ["${Intensity} === 103", "7"],
+//       ["${Intensity} === 106", "7"],
+//       ["${Intensity} === 104", "7"],
+//       ["true", "1"],
+//     ]
+//   }
+// }
 export const cesiumStyle = {
   color: {
     conditions: [
       // ["${Intensity} < 100", "${COLOR}*rgba(255,255,255, ${Intensity}/100)"],
-      ["${Intensity} === 101", "rgba(255, 255, 255, 1)"],
+      ["${Intensity} === 101", "rgba(255, 255, 255, 0.8)"],
       ["${Intensity} === 102", "rgba(127, 0, 0, 1)"],
       ["${Intensity} === 103","rgba(96, 96, 96, 0.1)"],
-      ["${Intensity} === 104","rgba(20, 38, 183, 1)"],
-      ["${Intensity} === 105","rgba(51, 153, 255, 1)"],
-      ["${Intensity} === 106","rgba(153, 51, 255, 1)"],
-      ["${Intensity} === 107","rgba(255, 0, 255, 1)"],
-      ["${Intensity} === 108","rgba(204, 0, 102, 1)"],
+      ["${Intensity} === 108","rgba( 25.5, 0, 255, 1)"],
+      ["${Intensity} === 107","rgba( 76.5, 0, 255, 1)"],
+      ["${Intensity} === 106","rgba(127.5, 0, 255, 1)"],
+      ["${Intensity} === 105","rgba(178.5, 0, 255, 1)"],
+      ["${Intensity} === 104","rgba(229.5, 0, 25, 1)"],
     ],
   },
   pointSize: {
